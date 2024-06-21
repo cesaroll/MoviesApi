@@ -35,3 +35,4 @@
 /Users/cesarl/Library/Mobile Documents/com~apple~CloudDocs/dotnet/RestApi/Movies.Api/obj/Debug/net8.0/Movies.Api.pdb
 /Users/cesarl/Library/Mobile Documents/com~apple~CloudDocs/dotnet/RestApi/Movies.Api/obj/Debug/net8.0/Movies.Api.genruntimeconfig.cache
 /Users/cesarl/Library/Mobile Documents/com~apple~CloudDocs/dotnet/RestApi/Movies.Api/obj/Debug/net8.0/ref/Movies.Api.dll
+/Users/cesarl/Library/Mobile Documents/com~apple~CloudDocs/dotnet/RestApi/Movies.Api/obj/Debug/net8.0/Movies.Api.sourcelink.json

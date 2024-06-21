@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "zrpV5UdnTEBdODI78lAXF3xPxSHnvsJLHGHMkU6pwD6chqKoU+OXgTA9hDXc+RYTQHUlWGsYPJ++luR0ffkb7Q==",
+  "dgSpecHash": "EyPXYP7oSyOeB4NlgMYEUVm4Ybfhp3KQU08ERoXSr9jukWXtrg/+RHUxRTeLO0h4swBsmzN3qWp2or6HAQh6qA==",
   "success": true,
   "projectFilePath": "/Users/cesarl/Library/Mobile Documents/com~apple~CloudDocs/dotnet/RestApi/Movies.App/Movies.App.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/cesarl/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.1/microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512"
+  ],
   "logs": []
 }
