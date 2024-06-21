@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Movies.Contracts.Responses;
 
 public class MovieResponse

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Movies.Contracts.Requests;
 
 public class UpdateMovieRequest
