@@ -2,11 +2,11 @@ using Movies.App.Models;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
 
-namespace Movies.Api.Mappers;
+namespace Movies.Api.Mapping;
 
-public static class MovieMappers
+public static class ContractMapping
 {
-    public static Movie ToMovie(this CreateMovieRequest request) => new Movie()
+    public static Movie MapToMovie(this CreateMovieRequest request) => new Movie()
     {
         Id = Guid.NewGuid(),
         Title = request.Title,
@@ -14,7 +14,7 @@ public static class MovieMappers
         Genres = request.Genres.ToList()
     };
     
-    public static MovieResponse ToMovieResponse(this Movie movie) => new MovieResponse()
+    public static MovieResponse MapToMovieResponse(this Movie movie) => new MovieResponse()
     {
         Id = movie.Id,
         Title = movie.Title,
