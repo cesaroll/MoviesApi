@@ -1,6 +1,16 @@
-﻿services:
-  restapi:
-    image: restapi
-    build:
-      context: .
-      dockerfile: RestApi/Dockerfile
+﻿version: '3.9'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: Password123
+      POSTGRES_DB: movies
+      PGDATA: /data/postgres
+    # volumes:
+    #   - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
