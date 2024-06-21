@@ -22,7 +22,7 @@ public class MoviesController : ControllerBase
         var result = await _movieRepository.CreateAsync(movie);
         
         var response = movie.MapToMovieResponse();
-        return Created($"{ApiEndpoints.Movies.Create}/{movie.Id}", response);
+        return CreatedAtAction(nameof(Get), new { id = movie.Id }, response);
     }
     
     [HttpGet(ApiEndpoints.Movies.Get)]
