@@ -1,25 +1,34 @@
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Identity.Data;
 using Movies.App.Models;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
 
 namespace Movies.Api.Mapping;
 
-public static class ContractMapping
+public static partial class ContractMapping
 {
-    public static Movie MapToMovie(this CreateMovieRequest request) => new Movie()
+    public static Movie MapToMovie(this CreateMovieRequest request)
     {
-        Id = Guid.NewGuid(),
-        Title = request.Title,
-        YearOfRelease = request.YearOfRelease,
-        Genres = request.Genres.ToList()
-    };
+        var id = Guid.NewGuid(); 
+        
+        return new Movie()
+        {
+            Id = id,
+            Title = request.Title,
+            Slug = GenerateSlug(request.Title, request.YearOfRelease),
+            YearOfRelease = request.YearOfRelease,
+            Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList()
+        };
+    }
     
     public static Movie MapToMovie(this UpdateMovieRequest request, Guid id) => new Movie()
     {
         Id = id,
         Title = request.Title,
+        Slug = GenerateSlug(request.Title, request.YearOfRelease),
         YearOfRelease = request.YearOfRelease,
-        Genres = request.Genres.ToList()
+        Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList()
     };
     
     public static MovieResponse MapToMovieResponse(this Movie movie) => new MovieResponse()
@@ -28,7 +37,7 @@ public static class ContractMapping
         Title = movie.Title,
         Slug = movie.Slug,
         YearOfRelease = movie.YearOfRelease,
-        Genres = movie.Genres
+        Genres = movie.Genres.Select(x => x.Name)
     };
 
     public static MoviesResponse MapToMoviesResponse(this IEnumerable<Movie> movies) =>
@@ -36,4 +45,16 @@ public static class ContractMapping
         {
             Items = movies.Select(MapToMovieResponse)
         };
+    
+    
+    private static string GenerateSlug(string title, int yearOfRelease)
+    {
+        var sluggedTitle = SlugRegex().Replace(title, string.Empty)
+            .ToLower().Replace(" ", "-");
+
+        return $"{sluggedTitle}-{yearOfRelease}";
+    }
+
+    [GeneratedRegex("[^0-9A-Za-z _-]", RegexOptions.NonBacktracking, 5)]
+    private static partial Regex SlugRegex();
 }
