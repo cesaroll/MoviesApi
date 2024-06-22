@@ -1,9 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using FluentAssertions;
-using Movies.Api.Tests.Integration.DataFixtures;
+using Movies.Api.Fakers.Contracts.Requests;
 using Movies.Contracts.Responses;
 
 namespace Movies.Api.Tests.Integration.MoviesController;

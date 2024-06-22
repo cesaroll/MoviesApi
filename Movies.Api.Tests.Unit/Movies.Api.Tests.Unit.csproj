@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoFixture.Xunit2" Version="4.18.1" />
+        <PackageReference Include="Bogus" Version="35.5.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="FluentAssertions" Version="6.12.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
@@ -23,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Movies.Api.Fakers\Movies.Api.Fakers.csproj" />
       <ProjectReference Include="..\Movies.Api\Movies.Api.csproj" />
       <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj" />
     </ItemGroup>

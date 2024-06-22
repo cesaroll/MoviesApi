@@ -1,44 +1,43 @@
-using System.Runtime.CompilerServices;
 using AutoFixture;
+using Bogus;
 using FluentAssertions;
+using Movies.Api.Fakers.Contracts.Requests;
+using Movies.Api.Fakers.Models;
 using Movies.Contracts.Requests;
 using Movies.Api.Mapping;
-using Movies.Api.Tests.Unit.DataFixtures;
-using Movies.App.Models;
 
 namespace Movies.Api.Tests.Unit.Mapping;
 
-public class ContractMappingTests : IClassFixture<MoviesFixture>
+public class ContractMappingTests //: IClassFixture<MoviesFixture>
 {
     private readonly IFixture _fixture;
-    private readonly MoviesFixture _moviesFixture;
+    private readonly Faker _faker;
 
-    public ContractMappingTests(MoviesFixture moviesFixture)
+    public ContractMappingTests()//MoviesFixture moviesFixture)
     {
-        _moviesFixture = moviesFixture;
-        _fixture = _moviesFixture.Fixture;
+        _fixture = new Fixture();
+        _faker = new Faker();
     }
     
-    [Fact]
-    public void GenerateSlug_ShouldReturnSlug()
+    [Theory]
+    [InlineData("Titanic", 1995, "titanic-1995")]
+    [InlineData("The Matrix", 1999, "the-matrix-1999")]
+    [InlineData("@something", 2005, "something-2005")]
+    public void GenerateSlug_ShouldReturnSlug(string title, int year, string expectedSlug)
     {
-        // Arrange
-        var title = _fixture.Create<string>();
-        var yearOfRelease = _fixture.Create<int>();
-    
         // Act
-        var slug = ContractMapping.GenerateSlug(title, yearOfRelease);
+        var slug = ContractMapping.GenerateSlug(title, year);
     
         // Assert
         slug.Should().NotBeNullOrEmpty();
-        slug.Should().Be($"{title}-{yearOfRelease}");
+        slug.Should().Be(expectedSlug);
     }
     
     [Fact]
     public void MapToMovie_CreateMovieRequest_ShouldReturnMovie()
     {
         // Arrange
-        var createMovieRequest = _fixture.Create<CreateMovieRequest>();
+        var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
     
         // Act
         var movie = createMovieRequest.MapToMovie();
@@ -56,7 +55,7 @@ public class ContractMappingTests : IClassFixture<MoviesFixture>
     public void MapToMovie_UpdateMovieRequest_ShouldReturnMovie()
     {
         // Arrange
-        var id = _fixture.Create<Guid>();
+        var id = _faker.Random.Guid();
         var updateMovieRequest = _fixture.Create<UpdateMovieRequest>();
     
         // Act
@@ -75,7 +74,7 @@ public class ContractMappingTests : IClassFixture<MoviesFixture>
     public void MapToMovieResponse_ShouldReturnMovieResponse()
     {
         // Arrange
-        var movie = _moviesFixture.GetMovie();
+        var movie = MovieBuilder.CreateOne();
         
         // Act
         var movieResponse = movie.MapToMovieResponse();
@@ -93,7 +92,7 @@ public class ContractMappingTests : IClassFixture<MoviesFixture>
     public void MapToMoviesResponse_ShouldReturnMoviesResponse()
     {
         // Arrange
-        var movies = _moviesFixture.GetMovies();
+        var movies = MovieBuilder.CreateMany();
         
         // Act
         var moviesResponse = movies.MapToMoviesResponse();

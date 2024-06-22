@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Movies.App\Movies.App.csproj" />
+      <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Contracts\Responses\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoFixture.Xunit2" Version="4.18.1" />
+      <PackageReference Include="Bogus" Version="35.5.1" />
+    </ItemGroup>
+
+</Project>
