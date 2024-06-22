@@ -47,7 +47,7 @@ public static partial class ContractMapping
         };
     
     
-    private static string GenerateSlug(string title, int yearOfRelease)
+    public static string GenerateSlug(string title, int yearOfRelease)
     {
         var sluggedTitle = SlugRegex().Replace(title, string.Empty)
             .ToLower().Replace(" ", "-");
