@@ -5,7 +5,8 @@ using Movies.Contracts.Responses;
 
 namespace Movies.Api.Tests.Integration.MoviesController;
 
-public class ReadMovieControllerTests : IClassFixture<MoviesApiFactory>
+[Collection("MoviesApi Collection")]
+public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
 {
     private HttpClient _client;
     public ReadMovieControllerTests(MoviesApiFactory apiFactory)

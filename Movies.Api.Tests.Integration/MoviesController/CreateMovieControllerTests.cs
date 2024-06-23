@@ -7,7 +7,8 @@ using Movies.Contracts.Responses;
 
 namespace Movies.Api.Tests.Integration.MoviesController;
 
-public class CreateMovieControllerTests :  IClassFixture<MoviesApiFactory>
+[Collection("MoviesApi Collection")]
+public class CreateMovieControllerTests //:  IClassFixture<MoviesApiFactory>
 {
     private HttpClient _client;
 
