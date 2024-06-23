@@ -9,21 +9,18 @@ public class CreateMovieRequestBuilder
     private int _yearOfRelease = 0;
     private List<string> _genres = new();
     
-    private static Faker _faker = new Faker();
+    private static readonly Faker Faker = new Faker();
+    
+    private static readonly Faker<CreateMovieRequest> Generator = new Faker<CreateMovieRequest>()
+        .RuleFor(x => x.Title, f => f.Random.Words(2))
+        .RuleFor(x => x.YearOfRelease, f => f.Random.Int(1995, 2015))
+        .RuleFor(x => x.Genres, f => f.Lorem.Words(2));
+
+    public static CreateMovieRequest CreateOne() => Generator.Generate();
     
     public static CreateMovieRequestBuilder Build()
     {
         return new CreateMovieRequestBuilder();
-    }
-    
-    public static CreateMovieRequest CreateOne()
-    {
-        return new CreateMovieRequest
-        {
-            Title = _faker.Random.Words(3),
-            YearOfRelease = _faker.Random.Int(1995, 2015),
-            Genres = new List<string> {_faker.Lorem.Word(), _faker.Lorem.Word()}
-        };
     }
     
     public CreateMovieRequestBuilder WithTitle(string title)
@@ -51,10 +48,11 @@ public class CreateMovieRequestBuilder
     }
     public CreateMovieRequest Create()
     {
+        var movie = CreateOne();
         return new CreateMovieRequest
         {
-            Title = _title ?? _faker.Random.Words(3),
-            YearOfRelease = (_yearOfRelease > 0) ? _yearOfRelease : _faker.Random.Int(1995, 2015),
+            Title = _title ?? movie.Title,
+            YearOfRelease = (_yearOfRelease > 0) ? _yearOfRelease : movie.YearOfRelease,
             Genres = _genres
         };
     }

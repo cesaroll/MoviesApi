@@ -16,6 +16,13 @@ public class MoviesApiFactory : WebApplicationFactory<IApiMarker>, IAsyncLifetim
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
+        });
+        
+        // This work with migrations
         builder.ConfigureAppConfiguration((context, config) =>
         {
             // Remove the previous configuration options
@@ -29,12 +36,14 @@ public class MoviesApiFactory : WebApplicationFactory<IApiMarker>, IAsyncLifetim
             
             config.AddInMemoryCollection(testConfig);
         });
-        
-        builder.ConfigureLogging(logging =>
-        {
-            logging.ClearProviders();
-            logging.AddConsole();
-        });
+
+        // This work without migrations
+        // builder.ConfigureServices(services =>
+        // {
+        //     services.RemoveAll(typeof(MoviesDbContext));
+        //     services.AddDbContext<MoviesDbContext>(options => 
+        //         options.UseNpgsql(_dbFactory.DbConnection.ConnectionString));
+        // });
     }
 
     public async Task InitializeAsync()

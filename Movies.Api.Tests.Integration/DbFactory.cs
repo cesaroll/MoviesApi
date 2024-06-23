@@ -12,14 +12,14 @@ public sealed class DbFactory : IAsyncLifetime
 {
     private readonly INetwork _network = new NetworkBuilder().Build();
 
-    private readonly IContainer _postgreSqlContainer;
+    private readonly IContainer _dbContainer;
 
     public DbFactory()
     {
-        _postgreSqlContainer = new PostgreSqlBuilder()
+        _dbContainer = new PostgreSqlBuilder()
             .WithImage("postgres:15-alpine")
             .WithNetwork(_network)
-            .WithNetworkAliases(nameof(_postgreSqlContainer))
+            .WithNetworkAliases(nameof(_dbContainer))
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilContainerIsHealthy())
             .WithWaitStrategy(Wait.ForUnixContainer()
@@ -29,15 +29,15 @@ public sealed class DbFactory : IAsyncLifetime
             .Build();
     }
     
-    public DbConnection DbConnection => new NpgsqlConnection(((PostgreSqlContainer)_postgreSqlContainer).GetConnectionString());
+    public DbConnection DbConnection => new NpgsqlConnection(((PostgreSqlContainer)_dbContainer).GetConnectionString());
     
     public async Task InitializeAsync()
     {
-        await _postgreSqlContainer.StartAsync();
+        await _dbContainer.StartAsync();
     }
 
     public async Task DisposeAsync()
     {
-        await _postgreSqlContainer.DisposeAsync();
+        await _dbContainer.DisposeAsync();
     }
 }
