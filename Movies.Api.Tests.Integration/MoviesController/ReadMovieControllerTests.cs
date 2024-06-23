@@ -7,11 +7,10 @@ namespace Movies.Api.Tests.Integration.MoviesController;
 
 public class ReadMovieControllerTests : IClassFixture<MoviesApiFactory>
 {
-    private readonly MoviesApiFactory _apiFactory;
-
+    private HttpClient _client;
     public ReadMovieControllerTests(MoviesApiFactory apiFactory)
     {
-        _apiFactory = apiFactory;
+        _client = apiFactory.CreateClient();
     }
 
     [Fact]
@@ -19,13 +18,12 @@ public class ReadMovieControllerTests : IClassFixture<MoviesApiFactory>
     {
         // Arrange
         var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
-        var client = _apiFactory.CreateClient();
         
-        var createdResponse = await client.PostAsJsonAsync("/api/movies", createMovieRequest);
+        var createdResponse = await _client.PostAsJsonAsync("/api/movies", createMovieRequest);
         var createdMovie = await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
         
         // Act
-        var readResponse = await client.GetAsync($"/api/movies/{createdMovie!.Id}");
+        var readResponse = await _client.GetAsync($"/api/movies/{createdMovie!.Id}");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();

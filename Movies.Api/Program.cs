@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
-builder.Services.AddDatabase(config.GetConnectionString("Movies")!);
+builder.Services.AddDatabase(config);
 
 var app = builder.Build();
 

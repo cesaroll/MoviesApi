@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.App.Database;
 using Movies.App.Repositories;
@@ -13,10 +14,10 @@ public static class ApplicationServiceCollectionExtensions
         return services;
     }
     
-    public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<MoviesDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(config.GetConnectionString("Movies")!));
         return services;
     }
     

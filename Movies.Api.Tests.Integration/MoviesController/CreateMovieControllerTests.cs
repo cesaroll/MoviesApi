@@ -9,19 +9,17 @@ namespace Movies.Api.Tests.Integration.MoviesController;
 
 public class CreateMovieControllerTests :  IClassFixture<MoviesApiFactory>
 {
-    private readonly MoviesApiFactory _apiFactory;
+    private HttpClient _client;
 
     public CreateMovieControllerTests(MoviesApiFactory apiFactory)
     {
-        _apiFactory = apiFactory;
+        _client = apiFactory.CreateClient();
     }
     
     [Fact]
     public async Task CreateMovie_Returns_Success_json()
     {
         // Arrange
-        var client = _apiFactory.CreateClient();
-        
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/movies");
         
         request.Content = new StringContent(
@@ -34,7 +32,7 @@ public class CreateMovieControllerTests :  IClassFixture<MoviesApiFactory>
             "application/json");
 
         // Act
-        var response = await client.SendAsync(request);
+        var response = await _client.SendAsync(request);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -46,15 +44,13 @@ public class CreateMovieControllerTests :  IClassFixture<MoviesApiFactory>
         var movieResponse = await response.Content.ReadFromJsonAsync<MovieResponse>();
         movieResponse.Should().NotBeNull();
         
-        location.Should().Be($"{client.BaseAddress}api/movies/{movieResponse?.Id}");
+        location.Should().Be($"{_client.BaseAddress}api/movies/{movieResponse?.Id}");
     }
     
     [Fact]
     public async Task CreateMovie_Returns_Success()
     {
         // Arrange
-        var client = _apiFactory.CreateClient();
-
         var movieRequest = CreateMovieRequestBuilder.Build()
             .WithTitle("Titanic")
             .WithYearOfRelease(1997)
@@ -63,7 +59,7 @@ public class CreateMovieControllerTests :  IClassFixture<MoviesApiFactory>
             .Create();
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/movies", movieRequest);
+        var response = await _client.PostAsJsonAsync("/api/movies", movieRequest);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -75,7 +71,7 @@ public class CreateMovieControllerTests :  IClassFixture<MoviesApiFactory>
         var movieResponse = await response.Content.ReadFromJsonAsync<MovieResponse>();
         movieResponse.Should().NotBeNull();
         
-        location.Should().Be($"{client.BaseAddress}api/movies/{movieResponse?.Id}");
+        location.Should().Be($"{_client.BaseAddress}api/movies/{movieResponse?.Id}");
         
         movieResponse!.Title.Should().Be(movieRequest.Title);
         movieResponse.YearOfRelease.Should().Be(movieRequest.YearOfRelease);
