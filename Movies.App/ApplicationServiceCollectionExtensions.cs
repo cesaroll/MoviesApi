@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.App.Database;
-using Movies.App.Repositories;
+using Movies.App.Services;
 
 namespace Movies.App;
 
@@ -10,7 +10,7 @@ public static class ApplicationServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IMoviesRepository, MoviesRepository>();
+        services.AddScoped<IMoviesService, MoviesService>();
         return services;
     }
     
