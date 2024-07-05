@@ -1,8 +1,19 @@
-﻿version: '3.9'
+﻿services:
 
-services:
-  postgres:
-    container_name: postgres_container
+  movies-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    depends_on:
+      postgresql:
+        condition: service_started
+
+  postgresql:
+    container_name: postgresql
     image: postgres:latest
     environment:
       POSTGRES_USER: app

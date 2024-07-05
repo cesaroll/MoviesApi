@@ -1,3 +1,4 @@
+using Movies.Api.Middleware;
 using Movies.App;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,11 +16,11 @@ builder.Services.AddDatabase(config);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 app.UseHttpsRedirection();
 
@@ -27,6 +28,7 @@ app.UseRouting();
 
 await app.Services.InitializeDatabaseAsync();
 
+app.UseMiddleware<ValidationApiMiddleware>();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

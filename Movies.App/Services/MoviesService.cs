@@ -1,21 +1,26 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Movies.App.Database;
 using Movies.App.Models;
+using Movies.App.Validators;
 
 namespace Movies.App.Services;
 
 public class MoviesService : IMoviesService
 {
     private readonly MoviesDbContext _context;
+    private readonly IValidator<Movie> _movieValidator;
 
-    public MoviesService(MoviesDbContext context)
+    public MoviesService(MoviesDbContext context, IValidator<Movie> movieValidator)
     {
         _context = context;
+        _movieValidator = movieValidator;
     }
 
 
     public async Task<bool> CreateAsync(Movie movie)
     {
+        await _movieValidator.ValidateAndThrowAsync(movie);
         await _context.Movies.AddAsync(movie);
         await _context.SaveChangesAsync();
         return true;
@@ -41,6 +46,7 @@ public class MoviesService : IMoviesService
 
     public async Task<Movie?> UpdateAsync(Movie movie)
     {
+        await _movieValidator.ValidateAndThrowAsync(movie);
         var movieExists = await _context.Movies
             .AsNoTracking()
             .AnyAsync(x => x.Id == movie.Id);
