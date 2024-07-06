@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Identity.Data;
 using Movies.App.Models;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;

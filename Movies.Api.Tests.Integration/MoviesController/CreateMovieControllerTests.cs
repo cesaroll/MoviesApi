@@ -78,4 +78,35 @@ public class CreateMovieControllerTests //:  IClassFixture<MoviesApiFactory>
         
         location.Should().Be($"{_client.BaseAddress}api/movies/{movieResponse?.Id}");
     }
+    
+    [Fact]
+    public async Task CreateMovie_InvalidRequest_ShouldReturn_BadRequest()
+    {
+        // Arrange
+        var movieRequest = CreateMovieRequestBuilder.Build()
+            .WithTitle(string.Empty)
+            .WithYearOfRelease(1800)
+            .Create();
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/movies", movieRequest);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Fact]
+    public async Task CreateMovie_ExistingMovie_ShouldReturn_Conflict()
+    {
+        // Arrange
+        var movieRequest = CreateMovieRequestBuilder.CreateOne();
+
+        await _client.PostAsJsonAsync("/api/movies", movieRequest);
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/movies", movieRequest);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
 }
