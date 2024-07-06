@@ -23,7 +23,7 @@ public class MoviesController : ControllerBase
         CancellationToken ct)
     {
         var movie = request.MapToMovie();
-        var result = await _moviesService.CreateAsync(movie, ct);
+        var result = await _moviesService.CreateAsync(new MovieContext(movie, ct));
         
         if (!result)
             return StatusCode((int)HttpStatusCode.Conflict);
@@ -39,8 +39,8 @@ public class MoviesController : ControllerBase
         CancellationToken ct)
     {
         var movie = Guid.TryParse(idOrSlug, out var id)
-            ? await _moviesService.GetByIdAsync(id, ct)
-            : await _moviesService.GetBySlugAsync(idOrSlug, ct);
+            ? await _moviesService.GetByIdAsync(new IdContext(id, ct))
+            : await _moviesService.GetBySlugAsync(new SlugContext(idOrSlug, ct));
 
         if (movie == null)
         {
@@ -69,7 +69,7 @@ public class MoviesController : ControllerBase
     {
         var movie = request.MapToMovie(id);
 
-        var result = await _moviesService.UpdateAsync(movie, ct);
+        var result = await _moviesService.UpdateAsync(new MovieContext(movie, ct));
 
         if (result == null)
             return NotFound();
@@ -84,7 +84,7 @@ public class MoviesController : ControllerBase
         Guid id,
         CancellationToken ct)
     {
-        await _moviesService.DeleteByIdAsync(id, ct);
+        await _moviesService.DeleteByIdAsync(new IdContext(id, ct));
         return Ok();
     }
 }
