@@ -106,4 +106,30 @@ public class CreateMovieControllerTests : MovieControllerTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
+    
+    [Fact]
+    public async Task CreateMovie_SutClient_ShouldReturn_Unauthorized()
+    {
+        // Arrange
+        var movieRequest = CreateMovieRequestBuilder.CreateOne();
+    
+        // Act
+        var response = await SutClient.PostAsJsonAsync("/api/movies", movieRequest);
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task CreateMovie_SutClientWithJwt_ShouldReturn_Forbidden()
+    {
+        // Arrange
+        var movieRequest = CreateMovieRequestBuilder.CreateOne();
+    
+        // Act
+        var response = await SutClientWithJwt.PostAsJsonAsync("/api/movies", movieRequest);
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
 }

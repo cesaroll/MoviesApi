@@ -49,4 +49,30 @@ public class UpdateMovieControllerTests : MovieControllerTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+    
+    [Fact]
+    public async Task UpdateMovie_SutClient_ShouldReturn_Unauthorized()
+    {
+        // Arrange
+        var movieRequest = UpdateMovieRequestBuilder.CreateOne();
+    
+        // Act
+        var response = await SutClient.PutAsJsonAsync($"/api/movies/{Guid.NewGuid()}", movieRequest);
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task UpdateMovie_SutClientWithJwt_ShouldReturn_Forbidden()
+    {
+        // Arrange
+        var movieRequest = UpdateMovieRequestBuilder.CreateOne();
+    
+        // Act
+        var response = await SutClientWithJwt.PutAsJsonAsync($"/api/movies/{Guid.NewGuid()}", movieRequest);
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
 }
