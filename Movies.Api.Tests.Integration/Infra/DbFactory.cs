@@ -2,11 +2,10 @@ using System.Data.Common;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
-using FluentAssertions;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
-namespace Movies.Api.Tests.Integration;
+namespace Movies.Api.Tests.Integration.Infra;
 
 public sealed class DbFactory : IAsyncLifetime
 {

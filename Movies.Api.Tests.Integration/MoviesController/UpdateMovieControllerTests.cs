@@ -2,18 +2,15 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Movies.Api.Fakers.Contracts.Requests;
+using Movies.Api.Tests.Integration.Infra;
 using Movies.Contracts.Responses;
 
 namespace Movies.Api.Tests.Integration.MoviesController;
 
-[Collection("MoviesApi Collection")]
-public class UpdateMovieControllerTests
+public class UpdateMovieControllerTests : MovieControllerTests
 {
-    private HttpClient _client;
-    
-    public UpdateMovieControllerTests(MoviesApiFactory factory)
+    public UpdateMovieControllerTests(MoviesApiFactory moviesApiFactory, IdentityApiFactory identityApiFactory) : base(moviesApiFactory, identityApiFactory)
     {
-        _client = factory.CreateClient();
     }
 
     [Fact]
@@ -25,7 +22,7 @@ public class UpdateMovieControllerTests
         var movieRequest = UpdateMovieRequestBuilder.CreateOne();
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/movies/{createdMovie!.Id}", movieRequest);
+        var response = await SutAdminClient.PutAsJsonAsync($"/api/movies/{createdMovie!.Id}", movieRequest);
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -47,7 +44,7 @@ public class UpdateMovieControllerTests
         var movieRequest = UpdateMovieRequestBuilder.CreateOne();
         
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/movies/{Guid.NewGuid()}", movieRequest);
+        var response = await SutAdminClient.PutAsJsonAsync($"/api/movies/{Guid.NewGuid()}", movieRequest);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -57,7 +54,7 @@ public class UpdateMovieControllerTests
     {
         var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
         
-        var createdResponse = await _client.PostAsJsonAsync("/api/movies", createMovieRequest);
+        var createdResponse = await SutAdminClient.PostAsJsonAsync("/api/movies", createMovieRequest);
         return await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
     }
 }

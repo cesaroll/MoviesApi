@@ -2,17 +2,15 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Movies.Api.Fakers.Contracts.Requests;
+using Movies.Api.Tests.Integration.Infra;
 using Movies.Contracts.Responses;
 
 namespace Movies.Api.Tests.Integration.MoviesController;
 
-[Collection("MoviesApi Collection")]
-public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
+public class ReadMovieControllerTests : MovieControllerTests
 {
-    private HttpClient _client;
-    public ReadMovieControllerTests(MoviesApiFactory apiFactory)
+    public ReadMovieControllerTests(MoviesApiFactory moviesApiFactory, IdentityApiFactory identityApiFactory) : base(moviesApiFactory, identityApiFactory)
     {
-        _client = apiFactory.CreateClient();
     }
 
     [Fact]
@@ -22,7 +20,7 @@ public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
         var createdMovie = await CreateMovie();
         
         // Act
-        var readResponse = await _client.GetAsync($"/api/movies/{createdMovie!.Id}");
+        var readResponse = await SutAdminClient.GetAsync($"/api/movies/{createdMovie!.Id}");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();
@@ -38,7 +36,7 @@ public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
         var createdMovie = await CreateMovie();
         
         // Act
-        var readResponse = await _client.GetAsync($"/api/movies/{createdMovie!.Slug}");
+        var readResponse = await SutAdminClient.GetAsync($"/api/movies/{createdMovie!.Slug}");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();
@@ -51,7 +49,7 @@ public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
     public async Task GetMovieById_ShouldReturn_NotFound()
     {
         // Act
-        var readResponse = await _client.GetAsync($"/api/movies/{Guid.NewGuid()}");
+        var readResponse = await SutAdminClient.GetAsync($"/api/movies/{Guid.NewGuid()}");
         
         // Assert
         readResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -64,7 +62,7 @@ public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
         var createdMovie = await CreateMovie();
         
         // Act
-        var readResponse = await _client.GetAsync($"/api/movies");
+        var readResponse = await SutAdminClient.GetAsync($"/api/movies");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();
@@ -80,7 +78,7 @@ public class ReadMovieControllerTests // : IClassFixture<MoviesApiFactory>
     {
         var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
         
-        var createdResponse = await _client.PostAsJsonAsync("/api/movies", createMovieRequest);
+        var createdResponse = await SutAdminClient.PostAsJsonAsync("/api/movies", createMovieRequest);
         return await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Movies.Api.Tests.Integration;
+namespace Movies.Api.Tests.Integration.Infra;
 
 public class MoviesApiFactory : WebApplicationFactory<IApiMarker>, IAsyncLifetime
 {
@@ -31,7 +31,10 @@ public class MoviesApiFactory : WebApplicationFactory<IApiMarker>, IAsyncLifetim
             // Alternate tests configurations
             var testConfig = new Dictionary<string, string?>
             {
-                ["ConnectionStrings:Movies"] = _dbFactory.DbConnection.ConnectionString
+                ["ConnectionStrings:Movies"] = _dbFactory.DbConnection.ConnectionString,
+                ["Jwt:Key"] = "SaltStoreAndLoadThisSecretSecurelyPepper",
+                ["Jwt:Issuer"] = "https://identity.ces.com",
+                ["Jwt:Audience"] = "https://movies.ces.com"
             };
             
             config.AddInMemoryCollection(testConfig);

@@ -2,18 +2,15 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Movies.Api.Fakers.Contracts.Requests;
+using Movies.Api.Tests.Integration.Infra;
 using Movies.Contracts.Responses;
 
 namespace Movies.Api.Tests.Integration.MoviesController;
 
-[Collection("MoviesApi Collection")]
-public class DeleteMovieControllerTests
+public class DeleteMovieControllerTests : MovieControllerTests
 {
-    private HttpClient _client;
-    
-    public DeleteMovieControllerTests(MoviesApiFactory factory)
+    public DeleteMovieControllerTests(MoviesApiFactory moviesApiFactory, IdentityApiFactory identityApiFactory) : base(moviesApiFactory, identityApiFactory)
     {
-        _client = factory.CreateClient();
     }
     
     [Fact]
@@ -23,7 +20,7 @@ public class DeleteMovieControllerTests
         var createdMovie = await CreateMovie();
 
         // Act
-        var response = await _client.DeleteAsync($"/api/movies/{createdMovie!.Id}");
+        var response = await SutAdminClient.DeleteAsync($"/api/movies/{createdMovie!.Id}");
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -34,7 +31,7 @@ public class DeleteMovieControllerTests
     public async Task DeleteNonExistingMovie_ShouldReturn_Success()
     {
         // Act
-        var response = await _client.DeleteAsync($"/api/movies/{Guid.NewGuid()}");
+        var response = await SutAdminClient.DeleteAsync($"/api/movies/{Guid.NewGuid()}");
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -45,7 +42,7 @@ public class DeleteMovieControllerTests
     {
         var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
         
-        var createdResponse = await _client.PostAsJsonAsync("/api/movies", createMovieRequest);
+        var createdResponse = await SutAdminClient.PostAsJsonAsync("/api/movies", createMovieRequest);
         return await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
     }
 }
