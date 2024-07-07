@@ -20,7 +20,7 @@ public class ReadMovieControllerTests : MovieControllerTests
         var createdMovie = await CreateMovie();
         
         // Act
-        var readResponse = await SutAdminClient.GetAsync($"/api/movies/{createdMovie!.Id}");
+        var readResponse = await SutClientWithJwt.GetAsync($"/api/movies/{createdMovie!.Id}");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();
@@ -36,7 +36,7 @@ public class ReadMovieControllerTests : MovieControllerTests
         var createdMovie = await CreateMovie();
         
         // Act
-        var readResponse = await SutAdminClient.GetAsync($"/api/movies/{createdMovie!.Slug}");
+        var readResponse = await SutClientWithJwt.GetAsync($"/api/movies/{createdMovie!.Slug}");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();
@@ -49,7 +49,7 @@ public class ReadMovieControllerTests : MovieControllerTests
     public async Task GetMovieById_ShouldReturn_NotFound()
     {
         // Act
-        var readResponse = await SutAdminClient.GetAsync($"/api/movies/{Guid.NewGuid()}");
+        var readResponse = await SutClientWithJwt.GetAsync($"/api/movies/{Guid.NewGuid()}");
         
         // Assert
         readResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -62,7 +62,7 @@ public class ReadMovieControllerTests : MovieControllerTests
         var createdMovie = await CreateMovie();
         
         // Act
-        var readResponse = await SutAdminClient.GetAsync($"/api/movies");
+        var readResponse = await SutClientWithJwt.GetAsync($"/api/movies");
         
         // Assert
         readResponse.EnsureSuccessStatusCode();
@@ -72,13 +72,5 @@ public class ReadMovieControllerTests : MovieControllerTests
         var list = moviesResponse!.Items.ToList();
         var movieResponse = list.Find(x => x.Id == createdMovie!.Id);
         movieResponse.Should().NotBeNull();
-    }
-    
-    private async Task<MovieResponse?> CreateMovie()
-    {
-        var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
-        
-        var createdResponse = await SutAdminClient.PostAsJsonAsync("/api/movies", createMovieRequest);
-        return await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
     }
 }

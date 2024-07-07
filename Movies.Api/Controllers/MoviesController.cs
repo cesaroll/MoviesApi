@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Movies.Api.Configs.Auth;
 using Movies.Api.Mapping;
 using Movies.App.Services;
 using Movies.Contracts.Requests;
@@ -18,6 +19,7 @@ public class MoviesController : ControllerBase
         _moviesService = moviesService;
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpPost(ApiEndpoints.Movies.Create)]
     public async Task<IActionResult> Create(
         [FromBody] 
@@ -34,7 +36,6 @@ public class MoviesController : ControllerBase
         return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, response);
     }
 
-    [AllowAnonymous]
     [HttpGet(ApiEndpoints.Movies.Get)]
     public async Task<IActionResult> Get(
         [FromRoute]
@@ -53,8 +54,7 @@ public class MoviesController : ControllerBase
         var response = movie.MapToMovieResponse();
         return Ok(response);
     }
-
-    [AllowAnonymous]
+    
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
@@ -63,6 +63,7 @@ public class MoviesController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpPut(ApiEndpoints.Movies.Update)]
     public async Task<IActionResult> Update(
         [FromRoute]
@@ -82,6 +83,7 @@ public class MoviesController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpDelete(ApiEndpoints.Movies.Delete)]
     public async Task<IActionResult> Delete(
         [FromRoute]

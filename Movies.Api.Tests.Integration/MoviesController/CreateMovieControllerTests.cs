@@ -26,7 +26,7 @@ public class CreateMovieControllerTests : MovieControllerTests
             .Create();
 
         // Act
-        var response = await SutAdminClient.PostAsJsonAsync("/api/movies", movieRequest);
+        var response = await SutClientWithJwtAdmin.PostAsJsonAsync("/api/movies", movieRequest);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -38,7 +38,7 @@ public class CreateMovieControllerTests : MovieControllerTests
         var movieResponse = await response.Content.ReadFromJsonAsync<MovieResponse>();
         movieResponse.Should().NotBeNull();
         
-        location.Should().Be($"{SutAdminClient.BaseAddress}api/movies/{movieResponse?.Id}");
+        location.Should().Be($"{SutClientWithJwtAdmin.BaseAddress}api/movies/{movieResponse?.Id}");
         
         movieResponse!.Title.Should().Be(movieRequest.Title);
         movieResponse.YearOfRelease.Should().Be(movieRequest.YearOfRelease);
@@ -61,7 +61,7 @@ public class CreateMovieControllerTests : MovieControllerTests
             "application/json");
     
         // Act
-        var response = await SutAdminClient.SendAsync(request);
+        var response = await SutClientWithJwtAdmin.SendAsync(request);
     
         // Assert
         response.EnsureSuccessStatusCode();
@@ -73,7 +73,7 @@ public class CreateMovieControllerTests : MovieControllerTests
         var movieResponse = await response.Content.ReadFromJsonAsync<MovieResponse>();
         movieResponse.Should().NotBeNull();
         
-        location.Should().Be($"{SutAdminClient.BaseAddress}api/movies/{movieResponse?.Id}");
+        location.Should().Be($"{SutClientWithJwtAdmin.BaseAddress}api/movies/{movieResponse?.Id}");
     }
     
     [Fact]
@@ -86,7 +86,7 @@ public class CreateMovieControllerTests : MovieControllerTests
             .Create();
     
         // Act
-        var response = await SutAdminClient.PostAsJsonAsync("/api/movies", movieRequest);
+        var response = await SutClientWithJwtAdmin.PostAsJsonAsync("/api/movies", movieRequest);
     
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -98,10 +98,10 @@ public class CreateMovieControllerTests : MovieControllerTests
         // Arrange
         var movieRequest = CreateMovieRequestBuilder.CreateOne();
     
-        await SutAdminClient.PostAsJsonAsync("/api/movies", movieRequest);
+        await SutClientWithJwtAdmin.PostAsJsonAsync("/api/movies", movieRequest);
     
         // Act
-        var response = await SutAdminClient.PostAsJsonAsync("/api/movies", movieRequest);
+        var response = await SutClientWithJwtAdmin.PostAsJsonAsync("/api/movies", movieRequest);
     
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);

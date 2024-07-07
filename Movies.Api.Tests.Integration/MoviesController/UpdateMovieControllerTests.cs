@@ -22,7 +22,7 @@ public class UpdateMovieControllerTests : MovieControllerTests
         var movieRequest = UpdateMovieRequestBuilder.CreateOne();
 
         // Act
-        var response = await SutAdminClient.PutAsJsonAsync($"/api/movies/{createdMovie!.Id}", movieRequest);
+        var response = await SutClientWithJwtAdmin.PutAsJsonAsync($"/api/movies/{createdMovie!.Id}", movieRequest);
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -44,17 +44,9 @@ public class UpdateMovieControllerTests : MovieControllerTests
         var movieRequest = UpdateMovieRequestBuilder.CreateOne();
         
         // Act
-        var response = await SutAdminClient.PutAsJsonAsync($"/api/movies/{Guid.NewGuid()}", movieRequest);
+        var response = await SutClientWithJwtAdmin.PutAsJsonAsync($"/api/movies/{Guid.NewGuid()}", movieRequest);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-    
-    private async Task<MovieResponse?> CreateMovie()
-    {
-        var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
-        
-        var createdResponse = await SutAdminClient.PostAsJsonAsync("/api/movies", createMovieRequest);
-        return await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
     }
 }

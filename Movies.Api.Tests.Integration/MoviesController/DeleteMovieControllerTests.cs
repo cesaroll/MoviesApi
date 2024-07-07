@@ -20,7 +20,7 @@ public class DeleteMovieControllerTests : MovieControllerTests
         var createdMovie = await CreateMovie();
 
         // Act
-        var response = await SutAdminClient.DeleteAsync($"/api/movies/{createdMovie!.Id}");
+        var response = await SutClientWithJwtAdmin.DeleteAsync($"/api/movies/{createdMovie!.Id}");
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -31,18 +31,10 @@ public class DeleteMovieControllerTests : MovieControllerTests
     public async Task DeleteNonExistingMovie_ShouldReturn_Success()
     {
         // Act
-        var response = await SutAdminClient.DeleteAsync($"/api/movies/{Guid.NewGuid()}");
+        var response = await SutClientWithJwtAdmin.DeleteAsync($"/api/movies/{Guid.NewGuid()}");
         
         // Assert
         response.EnsureSuccessStatusCode();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-    
-    private async Task<MovieResponse?> CreateMovie()
-    {
-        var createMovieRequest = CreateMovieRequestBuilder.CreateOne();
-        
-        var createdResponse = await SutAdminClient.PostAsJsonAsync("/api/movies", createMovieRequest);
-        return await createdResponse.Content.ReadFromJsonAsync<MovieResponse>();
     }
 }
