@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Movies.Api.Configs;
 using Movies.Api.Configs.Auth;
 using Movies.Api.Mapping;
 using Movies.App.Services;
@@ -12,11 +13,13 @@ namespace Movies.Api.Controllers;
 [ApiController]
 public class MoviesController : ControllerBase
 {
-    private readonly IMoviesService _moviesService;
+    private readonly IMovieService _movieService;
+    private readonly IRatingService _ratingService;
 
-    public MoviesController(IMoviesService moviesService)
+    public MoviesController(IMovieService movieService, IRatingService ratingService)
     {
-        _moviesService = moviesService;
+        _movieService = movieService;
+        _ratingService = ratingService;
     }
 
     [Authorize(AuthConstants.TrustedMemberPolicyName)]
@@ -26,15 +29,37 @@ public class MoviesController : ControllerBase
         CreateMovieRequest request,
         CancellationToken ct)
     {
+        var userId = HttpContext.GetUserId();
         var movie = request.MapToMovie();
-        var result = await _moviesService.CreateAsync(new MovieContext(movie, ct));
+        
+        var result = await _movieService.CreateAsync(new MovieContext(movie, userId, ct));
         
         if (!result)
             return StatusCode((int)HttpStatusCode.Conflict);
 
-        var response = movie.MapToMovieResponse();
+        var response = movie.MapToMovieResponse(userId);
         return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, response);
     }
+    
+    [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    [HttpPost(ApiEndpoints.Movies.Rate)]
+    public async Task<IActionResult> Rate(
+        [FromRoute]
+        Guid id,
+        [FromRoute]
+        int rating,
+        CancellationToken ct)
+    {
+        var userId = HttpContext.GetUserId();
+        
+        var result = await _ratingService.RateMovieAsync(new RatingIdContext(id, userId!.Value, rating, ct));
+        
+        if (!result)
+            return NotFound();
+        
+        return Ok();
+    }
+    
 
     [HttpGet(ApiEndpoints.Movies.Get)]
     public async Task<IActionResult> Get(
@@ -42,24 +67,29 @@ public class MoviesController : ControllerBase
         string idOrSlug, 
         CancellationToken ct)
     {
+        var userId = HttpContext.GetUserId();
+        
         var movie = Guid.TryParse(idOrSlug, out var id)
-            ? await _moviesService.GetByIdAsync(new IdContext(id, ct))
-            : await _moviesService.GetBySlugAsync(new SlugContext(idOrSlug, ct));
+            ? await _movieService.GetByIdAsync(new MovieIdContext(id, userId, ct))
+            : await _movieService.GetBySlugAsync(new SlugContext(idOrSlug, userId, ct));
 
         if (movie == null)
         {
             return NotFound();
         }
 
-        var response = movie.MapToMovieResponse();
+        var response = movie.MapToMovieResponse(userId);
         return Ok(response);
     }
     
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var movies = await _moviesService.GetAllAsync(ct);
-        var response = movies.MapToMoviesResponse();
+        var userId = HttpContext.GetUserId();
+        
+        var movies = await _movieService.GetAllAsync(ct);
+        
+        var response = movies.MapToMoviesResponse(userId);
         return Ok(response);
     }
 
@@ -72,14 +102,15 @@ public class MoviesController : ControllerBase
         UpdateMovieRequest request,
         CancellationToken ct)
     {
+        var userId = HttpContext.GetUserId();
         var movie = request.MapToMovie(id);
 
-        var result = await _moviesService.UpdateAsync(new MovieContext(movie, ct));
+        var result = await _movieService.UpdateAsync(new MovieContext(movie, userId, ct));
 
         if (result == null)
             return NotFound();
 
-        var response = result.MapToMovieResponse();
+        var response = result.MapToMovieResponse(userId);
         return Ok(response);
     }
 
@@ -90,7 +121,9 @@ public class MoviesController : ControllerBase
         Guid id,
         CancellationToken ct)
     {
-        await _moviesService.DeleteByIdAsync(new IdContext(id, ct));
+        var userId = HttpContext.GetUserId();
+        
+        await _movieService.DeleteByIdAsync(new MovieIdContext(id, userId, ct));
         return Ok();
     }
 }

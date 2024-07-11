@@ -7,5 +7,5 @@ up:
 down:
 	docker compose down;
 
-postgres:
+db:
 	docker compose up postgresql -d --remove-orphans

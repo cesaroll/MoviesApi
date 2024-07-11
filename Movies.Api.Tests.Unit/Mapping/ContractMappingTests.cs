@@ -75,9 +75,10 @@ public class ContractMappingTests //: IClassFixture<MoviesFixture>
     {
         // Arrange
         var movie = MovieBuilder.CreateOne();
+        var userId = _faker.Random.Guid();
         
         // Act
-        var movieResponse = movie.MapToMovieResponse();
+        var movieResponse = movie.MapToMovieResponse(userId);
 
         // Assert
         movieResponse.Should().NotBeNull();
@@ -93,9 +94,10 @@ public class ContractMappingTests //: IClassFixture<MoviesFixture>
     {
         // Arrange
         var movies = MovieBuilder.CreateMany();
+        var userId = _faker.Random.Guid();
         
         // Act
-        var moviesResponse = movies.MapToMoviesResponse();
+        var moviesResponse = movies.MapToMoviesResponse(userId);
 
         // Assert
         moviesResponse.Should().NotBeNull();

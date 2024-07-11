@@ -17,7 +17,8 @@ public static partial class ContractMapping
             Title = request.Title,
             Slug = GenerateSlug(request.Title, request.YearOfRelease),
             YearOfRelease = request.YearOfRelease,
-            Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList()
+            Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList(),
+            Ratings = []
         };
     }
     
@@ -27,22 +28,36 @@ public static partial class ContractMapping
         Title = request.Title,
         Slug = GenerateSlug(request.Title, request.YearOfRelease),
         YearOfRelease = request.YearOfRelease,
-        Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList()
+        Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList(),
+        Ratings = []
     };
     
-    public static MovieResponse MapToMovieResponse(this Movie movie) => new MovieResponse()
-    {
-        Id = movie.Id,
-        Title = movie.Title,
-        Slug = movie.Slug,
-        YearOfRelease = movie.YearOfRelease,
-        Genres = movie.Genres.Select(x => x.Name)
-    };
-
-    public static MoviesResponse MapToMoviesResponse(this IEnumerable<Movie> movies) =>
+    public static MovieResponse MapToMovieResponse(this Movie movie, Guid? userId) => 
         new()
         {
-            Items = movies.Select(MapToMovieResponse)
+            Id = movie.Id,
+            Title = movie.Title,
+            Slug = movie.Slug,
+            Rating = movie.Ratings.GetAverageRating(),
+            UserRating = movie.Ratings.GetUserRating(userId),
+            YearOfRelease = movie.YearOfRelease,
+            Genres = movie.Genres.Select(x => x.Name)
+        };
+
+    private static float? GetAverageRating(this List<Rating>? ratings) =>
+        ratings?.Count == 0
+            ? null
+            : (float?)ratings.Select(r => r.UserRating).Average();
+
+    private static int? GetUserRating(this List<Rating>? ratings, Guid? userId) =>
+        userId is null || ratings?.Count == 0
+            ? null
+            : ratings?.FirstOrDefault(r => r.UserId == userId)?.UserRating;
+    
+    public static MoviesResponse MapToMoviesResponse(this IEnumerable<Movie> movies, Guid? userId) =>
+        new()
+        {
+            Items = movies.Select(m => m.MapToMovieResponse(userId))
         };
     
     

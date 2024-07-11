@@ -3,7 +3,7 @@ using Movies.Api.Fakers.Contracts.Requests;
 using Movies.Api.Tests.Integration.Infra;
 using Movies.Contracts.Responses;
 
-namespace Movies.Api.Tests.Integration.MoviesController;
+namespace Movies.Api.Tests.Integration.MoviesControllerTests;
 
 [Collection("MoviesApi Collection")]
 public abstract class MovieControllerTests : IClassFixture<IdentityApiFactory>, IAsyncLifetime

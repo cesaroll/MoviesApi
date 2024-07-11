@@ -9,6 +9,8 @@ public class MovieBuilder
     private string? _title;
     private int _yearOfRelease = 0;
     private List<string> _genres = new();
+    private Guid? _userId;
+    private List<int> _ratings = new();
     
     private static readonly Faker _faker = new Faker();
 
@@ -34,7 +36,7 @@ public class MovieBuilder
     
     public MovieBuilder WithGenres(List<string> genres)
     {
-        _genres = genres;
+        _genres.AddRange(genres);
         return this;
     }
     
@@ -44,16 +46,39 @@ public class MovieBuilder
         return this;
     }
     
+    
+    public MovieBuilder WithUserId(Guid id)
+    {
+        _userId = id;
+        return this;
+    }
+    
+    public MovieBuilder WithRatings(List<int> ratings)
+    {
+        _ratings.AddRange(ratings);
+        return this;
+    }
+    
+    public MovieBuilder WithRating(int rating)
+    {
+        _ratings.Add(rating);
+        return this;
+    }
+    
     public Movie Create()
     {
         var genres = _genres.Select(g => new Genre { Name = g }).ToList();
+        
+        var userId = _userId ?? _faker.Random.Guid();
+        var ratings = _ratings.Select(r => new Rating { UserRating = r, UserId = userId}).ToList();
         
         var movie = new Movie
         {
             Id = _id ?? _faker.Random.Guid(),
             Title = _title ?? _faker.Random.Words(3),
             YearOfRelease = _yearOfRelease > 0 ? _yearOfRelease : _faker.Random.Int(1995, 2015),
-            Genres = genres
+            Genres = genres,
+            Ratings = ratings
         };
         
         foreach (var genre in genres)
@@ -69,6 +94,9 @@ public class MovieBuilder
         MovieBuilder.Build()
             .WithGenre(_faker.Lorem.Word())
             .WithGenre(_faker.Lorem.Word())
+            .WithRating(_faker.Random.Int(1, 10))
+            .WithRating(_faker.Random.Int(1, 10))
+            .WithRating(_faker.Random.Int(1, 10))
             .Create();
 
     public static IList<Movie> CreateMany(int count = 3)

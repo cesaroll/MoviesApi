@@ -5,12 +5,12 @@ using Movies.App.Models;
 
 namespace Movies.App.Services;
 
-public class MoviesService : IMoviesService
+public class MovieService : IMovieService
 {
     private readonly MoviesDbContext _context;
     private readonly IValidator<Movie> _movieValidator;
 
-    public MoviesService(MoviesDbContext context, IValidator<Movie> movieValidator)
+    public MovieService(MoviesDbContext context, IValidator<Movie> movieValidator)
     {
         _context = context;
         _movieValidator = movieValidator;
@@ -32,28 +32,28 @@ public class MoviesService : IMoviesService
             var existingMovie = await _context.Movies.AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Slug == context.Movie.Slug, context.Ct);
 
-            if (existingMovie is null)
-                return false;
-            
-            return true;
+            return existingMovie is not null;
         }
     }
 
-    public async Task<Movie?> GetByIdAsync(IdContext context)
+    public async Task<Movie?> GetByIdAsync(MovieIdContext context)
     {
-        return await _context.Movies
-            .FindAsync(context.Id, context.Ct);
+        return await _context.Movies.AsNoTracking()
+            .Include(m => m.Ratings)
+            .FirstOrDefaultAsync(m => m.Id == context.Id, context.Ct);
     }
 
     public async Task<Movie?> GetBySlugAsync(SlugContext context)
     {
         return await _context.Movies.AsNoTracking()
+            .Include(m => m.Ratings)
             .FirstOrDefaultAsync(m => m.Slug == context.Slug, context.Ct);
     }
 
     public async Task<IEnumerable<Movie>> GetAllAsync(CancellationToken ct)
     {
         return await _context.Movies.AsNoTracking()
+            .Include(m => m.Ratings)
             .ToListAsync(ct);
     }
 
@@ -72,7 +72,7 @@ public class MoviesService : IMoviesService
         return movie.Entity;
     }
 
-    public async Task<bool> DeleteByIdAsync(IdContext context)
+    public async Task<bool> DeleteByIdAsync(MovieIdContext context)
     {
         var movie = await _context.Movies.FindAsync(context.Id, context.Ct);
         if (movie == null)
