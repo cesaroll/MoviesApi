@@ -9,8 +9,8 @@ public static partial class ContractMapping
 {
     public static Movie MapToMovie(this CreateMovieRequest request)
     {
-        var id = Guid.NewGuid(); 
-        
+        var id = Guid.NewGuid();
+
         return new Movie()
         {
             Id = id,
@@ -21,7 +21,7 @@ public static partial class ContractMapping
             Ratings = []
         };
     }
-    
+
     public static Movie MapToMovie(this UpdateMovieRequest request, Guid id) => new Movie()
     {
         Id = id,
@@ -31,8 +31,8 @@ public static partial class ContractMapping
         Genres = request.Genres.Select(x => new Genre() { MovieId = id, Name = x }).ToList(),
         Ratings = []
     };
-    
-    public static MovieResponse MapToMovieResponse(this Movie movie, Guid? userId) => 
+
+    public static MovieResponse MapToMovieResponse(this Movie movie, Guid? userId) =>
         new()
         {
             Id = movie.Id,
@@ -44,23 +44,13 @@ public static partial class ContractMapping
             Genres = movie.Genres.Select(x => x.Name)
         };
 
-    private static float? GetAverageRating(this List<Rating>? ratings) =>
-        ratings?.Count == 0
-            ? null
-            : (float?)ratings.Select(r => r.UserRating).Average();
-
-    private static int? GetUserRating(this List<Rating>? ratings, Guid? userId) =>
-        userId is null || ratings?.Count == 0
-            ? null
-            : ratings?.FirstOrDefault(r => r.UserId == userId)?.UserRating;
-    
     public static MoviesResponse MapToMoviesResponse(this IEnumerable<Movie> movies, Guid? userId) =>
         new()
         {
             Items = movies.Select(m => m.MapToMovieResponse(userId))
         };
-    
-    
+
+
     public static string GenerateSlug(string title, int yearOfRelease)
     {
         var sluggedTitle = SlugRegex().Replace(title, string.Empty)

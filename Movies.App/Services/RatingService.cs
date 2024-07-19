@@ -57,4 +57,10 @@ public class RatingService : IRatingService
 
         return true;
     }
+
+    public async Task<List<Rating>> GetUserRatings(Guid userId, CancellationToken ct) =>
+        await _dbContext.Ratings.AsNoTracking()
+            .Include(r => r.Movie)
+            .Where(r => r.UserId == userId)
+            .ToListAsync();
 }

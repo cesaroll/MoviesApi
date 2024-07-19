@@ -14,12 +14,10 @@ namespace Movies.Api.Controllers;
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
-    private readonly IRatingService _ratingService;
 
-    public MoviesController(IMovieService movieService, IRatingService ratingService)
+    public MoviesController(IMovieService movieService)
     {
         _movieService = movieService;
-        _ratingService = ratingService;
     }
 
     [Authorize(AuthConstants.TrustedMemberPolicyName)]
@@ -105,36 +103,5 @@ public class MoviesController : ControllerBase
 
         await _movieService.DeleteByIdAsync(new MovieIdContext(id, userId, ct));
         return Ok();
-    }
-
-    [Authorize(AuthConstants.TrustedMemberPolicyName)]
-    [HttpPost(ApiEndpoints.Movies.Rate)]
-    public async Task<IActionResult> Rate(
-        [FromRoute]
-        Guid id,
-        [FromRoute]
-        int rating,
-        CancellationToken ct)
-    {
-        var userId = HttpContext.GetUserId();
-
-        var result = await _ratingService.RateMovieAsync(new RatingIdContext(id, userId!.Value, rating, ct));
-
-        return result ? Ok() : NotFound();
-    }
-
-    [Authorize]
-    [HttpDelete(ApiEndpoints.Movies.DeleteRating)]
-    public async Task<IActionResult> DeleteRating(
-        [FromRoute]
-        Guid id,
-        CancellationToken ct
-    )
-    {
-        var userId = HttpContext.GetUserId();
-
-        var result = await _ratingService.DeleteRatingAsync(new RatingIdContext(id, userId!.Value, 0, ct));
-
-        return result ? Ok() : NotFound();
     }
 }
